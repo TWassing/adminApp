@@ -84,7 +84,7 @@ public class MyAdmin extends DeviceAdminReceiver {
     }
     @Override
     public void onNetworkLogsAvailable(Context context, Intent intent, long batchToken, int networkLogsCount) {
-        Log.d("touchscreen", "hoi");
+        Log.d("touchscreen", "hoi2");
         Log.d("touchscreen", "POEPOEPOEPOEPOEPOESKNOL");
     }
 
