@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">adminApp</string>
+    <string name="title_activity_show_security_logging">showSecurityLoggingActivity</string>
+</resources>
