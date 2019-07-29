@@ -25,18 +25,20 @@ public class FileHandler {
 
     private static String TAG = "FileHandler";
     private Context context;
+    private String dirName;
 
-    FileHandler(Context context)
+    FileHandler(Context context, String dirName)
     {
         this.context = context;
+        this.dirName = dirName;
     }
 
     public void writeToExternalSdCard(List<String> stringList)
     {
-        File dir = getSecurityLogsDir();
+        File dir = getLogsDir();
         dir.mkdirs();
         String timeStamp = new SimpleDateFormat("yyyy.MM.dd-HH:mm:ss").format(new Date());
-        File file = new File (dir, "securitylog-" + timeStamp + ".txt");
+        File file = new File (dir, dirName + "log-" + timeStamp + ".txt");
 
         try {
             FileOutputStream f = new FileOutputStream(file);
@@ -57,13 +59,13 @@ public class FileHandler {
     }
 
 
-    public boolean removeSecurityFiles()
+    public boolean removeLogFilesFromDir()
     {
         boolean success = false;
-        File directory = getSecurityLogsDir();
+        File directory = getLogsDir();
         if (!directory.exists())
         {
-            Log.d("SecurityLog1", "dir doesn't exist or no permissions");
+            Log.d("FileHandler", "dir doesn't exist or no permissions");
             return false;
         }
         String[] files = directory.list();
@@ -94,12 +96,12 @@ public class FileHandler {
 
     public List<String> fromLogFilesToList()
     {
-        File directory = getSecurityLogsDir();
+        File directory = getLogsDir();
         List<String> stringList = new ArrayList<>();
 
         if (!directory.exists())
         {
-            Log.d("SecurityLog2", "dir doesn't exist or no permissions");
+            Log.d("FileHandler", "dir doesn't exist or no permissions");
             return null;
         }
         File[] files = directory.listFiles();
@@ -122,12 +124,8 @@ public class FileHandler {
         return stringList;
     }
 
-    private File getSecurityLogsDir()
+    private File getLogsDir()
     {
-        if(ContextCompat.checkSelfPermission(context,
-                Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED){
-            ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 225);
-        }
-        return new File (Environment.getExternalStorageDirectory().toString()+ "/securityLog");
+        return new File (Environment.getExternalStorageDirectory().toString()+ "/" + dirName);
     }
 }

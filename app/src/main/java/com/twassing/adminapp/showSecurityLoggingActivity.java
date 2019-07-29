@@ -56,36 +56,5 @@ public class showSecurityLoggingActivity extends AppCompatActivity {
                 android.R.id.text1, logList);
 
         listView.setAdapter(mAdapter);
-
-        SecurityLogStringBuilder securityLogStringBuilder = new SecurityLogStringBuilder(this);
-        SocketConnection socketConnection = new SocketConnection(this);
-        FileHandler fileHandler = new FileHandler(this);
-        logList = new ArrayList<>();
-
-        List<String> savedList = fileHandler.fromLogFilesToList();
-        List<String> newList = securityLogStringBuilder.getSecurityLogsAsList();
-
-        if(savedList != null) {
-            if (savedList.size() > 0) {
-                logList.addAll(savedList);
-            }
-        }
-
-        if(newList != null)
-        {
-            if (newList.size() > 0)
-            {
-                 logList.addAll(newList);
-                 fileHandler.writeToExternalSdCard(newList);
-            }
-        }
-        if (logList.size() > 0) {
-            mAdapter.addAll(logList);
-            socketConnection.ConnectAndSendMessage(logList);
-
-            if (socketConnection.getLoggingSent()) {
-                fileHandler.removeSecurityFiles();
-            }
-        }
     }
 }

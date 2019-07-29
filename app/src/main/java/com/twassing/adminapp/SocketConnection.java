@@ -50,7 +50,7 @@ public class SocketConnection {
     public SocketConnection(Context context)
     {
         this.context = context;
-        this.ipAddr = "192.168.2.159";
+        this.ipAddr = "192.168.43.90";
         this.port = 6514;
     }
 

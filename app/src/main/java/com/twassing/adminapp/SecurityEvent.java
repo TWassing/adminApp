@@ -13,9 +13,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class SecurityEvent {
-
-    private static final int FACILITY = 4;
+public class SecurityEvent extends LogEvent {
 
     private static final int SEVERITY_INFO = 6;
     private static final int SEVERITY_WARNING = 4;
@@ -27,7 +25,6 @@ public class SecurityEvent {
     private String logEvent;
     private String logID;
     private String logDescription;
-    private String PRI;
 
     private Context context;
 
@@ -47,23 +44,15 @@ public class SecurityEvent {
     {
         return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX").format(TimeUnit.NANOSECONDS.toMillis(timestamp));
     }
-    public String getLogID()
-    {
-        return logID;
-    }
-    public String getLogLevel()
-    {
-        return logLevel;
-    }
 
-    public String getLogEvent()
+    public String getMessage()
     {
-        return logEvent;
-    }
-
-    public String getLogDescription()
-    {
-        return logDescription;
+        StringBuilder sb = new StringBuilder();
+        sb.append("LogID=").append(logID).append(", ");
+        sb.append("LogLevel=").append(logLevel).append(", ");
+        sb.append("LogEvent=").append(logEvent).append(", ");
+        sb.append("Description=[ ").append(logDescription).append("]");
+        return sb.toString();
     }
 
     public String getLogPRI()
@@ -83,7 +72,7 @@ public class SecurityEvent {
                 Log.d("SecurityEvent", "UNKNOWN LOGLEVEL:(" + logLevel + ")");
                 severity = SEVERITY_INFO;
         }
-        return String.valueOf((FACILITY * 8) + severity);
+        return String.valueOf((FACILITY_SECURITY * 8) + severity);
     }
 
     @TargetApi(Build.VERSION_CODES.P)
