@@ -88,7 +88,7 @@ public class SocketConnection {
             mSSLSocket.setSoTimeout(5000);
             if(mSSLSocket.isConnected())
             {
-                Log.d("hoi","WOWOWOOWOWOW");
+                Log.d("socketConnection", "Connected with log collector");
                 return true;
             }
         }
@@ -110,10 +110,10 @@ public class SocketConnection {
                 try  {
                     if(connect())
                     {
-                        Log.d("HZLASLK", "WHOOPPPPGPGPPGPGPG");
                         PrintWriter pw = new PrintWriter(new OutputStreamWriter(mSSLSocket.getOutputStream(), StandardCharsets.UTF_8), true);
                         for (String log : list)
                             pw.println(log);
+                        Log.d("socketConnection", "Logging sent");
                         loggingSent = true;
 
                         pw.flush();
@@ -123,7 +123,7 @@ public class SocketConnection {
                 }
                 catch (Exception e)
                 {
-                    Log.d("socketConnection", "Connection with splunk failed");
+                    Log.d("socketConnection", "Connection with log collector failed");
                     e.printStackTrace();
                 }
             }

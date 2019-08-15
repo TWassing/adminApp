@@ -70,16 +70,17 @@ public class FileHandler {
         }
         String[] files = directory.list();
         if (files != null && files.length > 0) {
-            Log.d("hoi", "Nr of files: " + files.length);
+            Log.d("FileHandler", "Nr of files to delete: " + files.length);
             for (String file : files) {
                 if (new File(directory, file).exists())
                 {
                     if(!new File(directory,file).delete()) {
-                        Log.d("hoi", "Cannot delete file");
+                        Log.d("FileHandler", "Cannot delete file(s)");
                         return success;
                     }
                     else
                     {
+                        Log.d("FileHandler", "Removed successfully");
                         success = true;
                     }
                 }

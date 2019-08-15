@@ -38,7 +38,7 @@ public class LogBuilder {
             Log.w(TAG, "logs == null, are you polling too early?");
             return null;
         } else {
-            Log.d(TAG, "Incoming logs size: " + logs.size());
+            Log.d(TAG, "New security log batch size: " + logs.size());
             List<String> logList = new ArrayList<String>();
             for (android.app.admin.SecurityLog.SecurityEvent event : logs)
             {
@@ -53,7 +53,7 @@ public class LogBuilder {
             Log.w(TAG, "logs == null, are you polling too early?");
             return null;
         } else {
-            Log.d(TAG, "Incoming logs size: " + logs.size());
+            Log.d(TAG, "New network log batch size: " + logs.size());
             List<String> logList = new ArrayList<String>();
             for (android.app.admin.NetworkEvent event : logs)
             {

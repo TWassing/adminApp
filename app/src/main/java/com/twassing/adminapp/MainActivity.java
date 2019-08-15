@@ -83,17 +83,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         {
             Intent intent = new Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
             intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, compName);
-            intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION, "this text explains why bitches");
+            intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION, "Enabled admin privileges");
             startActivityForResult(intent, RESULT_ENABLE);
         }
         else if (view == disable)
         {
             devicePolicyManager.removeActiveAdmin(compName);
-            Log.d("HALLO", "onClick: MIAUW");
-            if (devicePolicyManager.isNetworkLoggingEnabled(compName))
-            {
-                Log.d("HALLO", "SICKE POESKNOL MIAUW");
-            }
         }
 
         else if(view == showLogging)

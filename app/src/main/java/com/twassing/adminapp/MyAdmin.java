@@ -27,7 +27,6 @@ import java.util.List;
 public class MyAdmin extends DeviceAdminReceiver {
 
     private int attempts = 0;
-    DevicePolicyManager dpm;
     ComponentName component;
     SocketConnection socketConnection;
 
@@ -35,7 +34,7 @@ public class MyAdmin extends DeviceAdminReceiver {
     public void onEnabled(Context context, Intent intent)
     {
         component = getWho(context);
-        dpm = (DevicePolicyManager) context.getSystemService(Context.DEVICE_POLICY_SERVICE);
+        DevicePolicyManager dpm = (DevicePolicyManager) context.getSystemService(Context.DEVICE_POLICY_SERVICE);
         if(dpm != null)
         {
             Log.d("touchscreen", "POEESSSKNOLLL");
@@ -87,20 +86,21 @@ public class MyAdmin extends DeviceAdminReceiver {
                 Toast.LENGTH_LONG)
                 .show();
         Log.d("securitylogging", "onSecurityLogsAvailable() called");
-        dpm = (DevicePolicyManager) context.getSystemService(Context.DEVICE_POLICY_SERVICE);
+        DevicePolicyManager dpm = (DevicePolicyManager) context.getSystemService(Context.DEVICE_POLICY_SERVICE);
         if(dpm == null)
-            Log.d("GAST", "OK");
-        LogBuilder logBuilder = new LogBuilder(context);
-        SocketConnection socketConnection = new SocketConnection(context);
-        FileHandler fileHandler = new FileHandler(context, "securityLog");
-        List<String> logList = new ArrayList<>();
+            Log.d("securitylogging", "DPM = null");
+        LogBuilder logBuilder1 = new LogBuilder(context);
+        SocketConnection socketConnection1 = new SocketConnection(context);
+        FileHandler fileHandler1 = new FileHandler(context, "securityLog");
+        List<String> logList1 = new ArrayList<>();
 
-        List<String> savedList = fileHandler.fromLogFilesToList();
-        List<String> newList = logBuilder.ProcessSecurityLogs(dpm.retrieveSecurityLogs(getComponentName(context)));
+        List<String> savedList = fileHandler1.fromLogFilesToList();
+        List<android.app.admin.SecurityLog.SecurityEvent> securityList = dpm.retrieveSecurityLogs(getComponentName(context));
+        List<String> newList = logBuilder1.ProcessSecurityLogs(securityList);
 
         if(savedList != null) {
             if (savedList.size() > 0) {
-                logList.addAll(savedList);
+                logList1.addAll(savedList);
             }
         }
 
@@ -108,15 +108,15 @@ public class MyAdmin extends DeviceAdminReceiver {
         {
             if (newList.size() > 0)
             {
-                logList.addAll(newList);
-                fileHandler.writeToExternalSdCard(newList);
+                logList1.addAll(newList);
+                fileHandler1.writeToExternalSdCard(newList);
             }
         }
-        if (logList.size() > 0) {
-            socketConnection.ConnectAndSendMessage(logList);
+        if (logList1.size() > 0) {
+            socketConnection1.ConnectAndSendMessage(logList1);
 
-            if (socketConnection.getLoggingSent()) {
-                fileHandler.removeLogFilesFromDir();
+            if (socketConnection1.getLoggingSent()) {
+                fileHandler1.removeLogFilesFromDir();
             }
         }
 
@@ -125,8 +125,8 @@ public class MyAdmin extends DeviceAdminReceiver {
     public void onNetworkLogsAvailable(Context context, Intent intent, long batchToken, int networkLogsCount) {
         Log.i("DPM", "onNetworkLogsAvailable(), batchToken: " + batchToken
                 + ", event count: " + networkLogsCount);
-        dpm = (DevicePolicyManager) context.getSystemService(Context.DEVICE_POLICY_SERVICE);
         List<NetworkEvent> events = null;
+        DevicePolicyManager dpm = (DevicePolicyManager) context.getSystemService(Context.DEVICE_POLICY_SERVICE);
         try {
             events = dpm.retrieveNetworkLogs(getComponentName(context), batchToken);
             Log.d("DPM", "Network logs retrieved");
@@ -143,7 +143,7 @@ public class MyAdmin extends DeviceAdminReceiver {
 
         LogBuilder logBuilder = new LogBuilder(context);
         SocketConnection socketConnection = new SocketConnection(context);
-        FileHandler fileHandler = new FileHandler(context, "networkLogs");
+        FileHandler fileHandler = new FileHandler(context, "networkLog");
         List<String> logList = new ArrayList<>();
 
         List<String> savedList = fileHandler.fromLogFilesToList();
