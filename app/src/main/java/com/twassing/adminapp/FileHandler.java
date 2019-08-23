@@ -1,15 +1,9 @@
 package com.twassing.adminapp;
 
-import android.Manifest;
-import android.app.Activity;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.icu.text.SimpleDateFormat;
 import android.os.Environment;
 import android.util.Log;
-
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
 import java.io.File;
 import java.io.FileNotFoundException;

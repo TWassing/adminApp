@@ -1,16 +1,11 @@
 package com.twassing.adminapp;
 
 import android.annotation.TargetApi;
-import android.app.admin.SecurityLog;
 import android.content.Context;
 import android.os.Build;
-import android.provider.Settings;
 import android.util.Log;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class SecurityEvent extends LogEvent {

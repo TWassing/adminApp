@@ -1,18 +1,13 @@
 package com.twassing.adminapp;
 
-import android.annotation.TargetApi;
 import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
 import android.content.Context;
-import android.os.Build.VERSION_CODES;
 import android.provider.Settings;
 import android.util.Log;
 
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 public class LogBuilder {
 

@@ -6,29 +6,22 @@ import android.app.admin.NetworkEvent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
-import android.os.Build;
-import android.os.PersistableBundle;
+import android.content.SharedPreferences;
 import android.os.UserHandle;
 import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
+
+import static android.content.Context.MODE_PRIVATE;
 
 public class MyAdmin extends DeviceAdminReceiver {
 
     private int attempts = 0;
     ComponentName component;
-    SocketConnection socketConnection;
 
     @Override
     public void onEnabled(Context context, Intent intent)
@@ -37,9 +30,6 @@ public class MyAdmin extends DeviceAdminReceiver {
         DevicePolicyManager dpm = (DevicePolicyManager) context.getSystemService(Context.DEVICE_POLICY_SERVICE);
         if(dpm != null)
         {
-            Log.d("touchscreen", "POEESSSKNOLLL");
-            dpm.setSecurityLoggingEnabled(getWho(context), true);
-            dpm.setNetworkLoggingEnabled(getWho(context), true);
             if(dpm.isSecurityLoggingEnabled(getWho(context)))
             {
                 Log.d("touchscreen", "button: SECURITY LOGGING IS ENABLED");
@@ -51,14 +41,13 @@ public class MyAdmin extends DeviceAdminReceiver {
         }
 
         Toast.makeText(context, "Device Admin : Enabled", Toast.LENGTH_LONG).show();
-        Log.d("touchscreen", "button: ADMIN ENABLED");
+        Log.d("DPM", "button: ADMIN ENABLED");
     }
 
     @Override
     public void onDisabled(Context context, Intent intent)
     {
         Toast.makeText(context, "Device Admin : Disabled", Toast.LENGTH_LONG).show();
-        Log.d("touchscreen", "poep: ADMIN DISABLED");
     }
 
     @Override
@@ -90,8 +79,9 @@ public class MyAdmin extends DeviceAdminReceiver {
         if(dpm == null)
             Log.d("securitylogging", "DPM = null");
         LogBuilder logBuilder1 = new LogBuilder(context);
-        SocketConnection socketConnection1 = new SocketConnection(context);
-        FileHandler fileHandler1 = new FileHandler(context, "securityLog");
+        SharedPreferences pref = context.getSharedPreferences("MyPref", MODE_PRIVATE);
+        SocketConnection socketConnection1 = new SocketConnection(context, pref.getString("ipAddrString", ""), Integer.valueOf(pref.getString("portString", "")), pref.getString("certPasswordString", ""));
+        FileHandler fileHandler1 = new FileHandler(context, "security");
         List<String> logList1 = new ArrayList<>();
 
         List<String> savedList = fileHandler1.fromLogFilesToList();
@@ -113,10 +103,15 @@ public class MyAdmin extends DeviceAdminReceiver {
             }
         }
         if (logList1.size() > 0) {
-            socketConnection1.ConnectAndSendMessage(logList1);
+            if (pref.getBoolean("sendLogEnabled", false))
+            {
+                socketConnection1.ConnectAndSendMessage(logList1);
 
-            if (socketConnection1.getLoggingSent()) {
-                fileHandler1.removeLogFilesFromDir();
+                if (pref.getBoolean("removeLogEnabled", false)) {
+                    if (socketConnection1.getLoggingSent()) {
+                        fileHandler1.removeLogFilesFromDir();
+                    }
+                }
             }
         }
 
@@ -142,8 +137,9 @@ public class MyAdmin extends DeviceAdminReceiver {
         }
 
         LogBuilder logBuilder = new LogBuilder(context);
-        SocketConnection socketConnection = new SocketConnection(context);
-        FileHandler fileHandler = new FileHandler(context, "networkLog");
+        SharedPreferences pref = context.getSharedPreferences("MyPref", MODE_PRIVATE);
+        SocketConnection socketConnection = new SocketConnection(context, pref.getString("ipAddrString", ""), Integer.valueOf(pref.getString("portString", "")), pref.getString("certPasswordString", ""));
+        FileHandler fileHandler = new FileHandler(context, "network");
         List<String> logList = new ArrayList<>();
 
         List<String> savedList = fileHandler.fromLogFilesToList();
@@ -164,10 +160,15 @@ public class MyAdmin extends DeviceAdminReceiver {
             }
         }
         if (logList.size() > 0) {
-            socketConnection.ConnectAndSendMessage(logList);
+            if (pref.getBoolean("sendLogEnabled", false))
+            {
+                socketConnection.ConnectAndSendMessage(logList);
 
-            if (socketConnection.getLoggingSent()) {
-                fileHandler.removeLogFilesFromDir();
+                if (pref.getBoolean("removeLogEnabled", false)) {
+                    if (socketConnection.getLoggingSent()) {
+                        fileHandler.removeLogFilesFromDir();
+                    }
+                }
             }
         }
     }

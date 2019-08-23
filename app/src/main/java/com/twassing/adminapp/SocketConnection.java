@@ -1,50 +1,31 @@
 package com.twassing.adminapp;
 
 import android.content.Context;
-import android.net.SSLCertificateSocketFactory;
-import android.net.SSLSessionCache;
-import android.os.AsyncTask;
 import android.util.Log;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.net.Socket;
-import java.net.SocketAddress;
-import java.net.UnknownHostException;
+import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
-import java.security.KeyManagementException;
 import java.security.KeyStore;
-import java.security.NoSuchAlgorithmException;
-import java.security.UnrecoverableKeyException;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
 import java.util.List;
 
-import javax.net.SocketFactory;
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocket;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
-import javax.net.ssl.X509TrustManager;
 
 public class SocketConnection {
 
     private String ipAddr;
+    private String certPassword;
     private int port;
-    private Socket s;
     private boolean loggingSent = false;
     private Thread thread;
     private Context context;
 
     private SSLSocket mSSLSocket;
-    private SSLCertificateSocketFactory socketFactory;
 
 
     public SocketConnection(Context context)
@@ -52,12 +33,15 @@ public class SocketConnection {
         this.context = context;
         this.ipAddr = "192.168.43.90";
         this.port = 6514;
+        certPassword = "password";
     }
 
-    public SocketConnection(String ipAddr, int port)
+    public SocketConnection(Context context, String ipAddr, int port, String certPassword)
     {
+        this.context = context;
         this.ipAddr = ipAddr;
         this.port = port;
+        this.certPassword = certPassword;
     }
 
     private boolean connect() {
@@ -69,14 +53,14 @@ public class SocketConnection {
             final InputStream keystore_inputStream = context.getResources().openRawResource(R.raw.client);
             final InputStream truststore_inputStream = context.getResources().openRawResource(R.raw.clienttruststore);
 
-            keyStore.load(keystore_inputStream, "i1DtPnzx.".toCharArray());
-            truststore.load(truststore_inputStream, "i1DtPnzx.".toCharArray());
+            keyStore.load(keystore_inputStream, certPassword.toCharArray());
+            truststore.load(truststore_inputStream, certPassword.toCharArray());
 
             keystore_inputStream.close();
             truststore_inputStream.close();
 
             KeyManagerFactory keyFManager = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-            keyFManager.init(keyStore, "i1DtPnzx.".toCharArray());
+            keyFManager.init(keyStore, certPassword.toCharArray());
 
             TrustManagerFactory trustMFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
             trustMFactory.init(truststore);
@@ -84,8 +68,11 @@ public class SocketConnection {
             SSLContext sc = SSLContext.getInstance("TLS");
             sc.init(keyFManager.getKeyManagers(), trustMFactory.getTrustManagers(), new java.security.SecureRandom());
 
-            mSSLSocket = (SSLSocket) sc.getSocketFactory().createSocket(ipAddr, port);
-            mSSLSocket.setSoTimeout(5000);
+            mSSLSocket = (SSLSocket) sc.getSocketFactory().createSocket();
+            mSSLSocket.connect(new InetSocketAddress(ipAddr, port), 5000);
+            mSSLSocket.startHandshake();
+            mSSLSocket.setSoTimeout(0);
+
             if(mSSLSocket.isConnected())
             {
                 Log.d("socketConnection", "Connected with log collector");
@@ -94,7 +81,7 @@ public class SocketConnection {
         }
         catch (Exception e)
         {
-             e.printStackTrace();
+            Log.d("socketConnection", "Failed to connect with log collector");
         }
         return false;
     }
@@ -124,7 +111,6 @@ public class SocketConnection {
                 catch (Exception e)
                 {
                     Log.d("socketConnection", "Connection with log collector failed");
-                    e.printStackTrace();
                 }
             }
         });
