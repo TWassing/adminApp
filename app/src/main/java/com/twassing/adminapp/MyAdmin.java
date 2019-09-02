@@ -32,11 +32,11 @@ public class MyAdmin extends DeviceAdminReceiver {
         {
             if(dpm.isSecurityLoggingEnabled(getWho(context)))
             {
-                Log.d("touchscreen", "button: SECURITY LOGGING IS ENABLED");
+                Log.d("DPC", "button: SECURITY LOGGING IS ENABLED");
             }
             if(dpm.isNetworkLoggingEnabled(getWho(context)))
             {
-                Log.d("touchscreen", "button: NETWORK LOGGING IS ENABLED");
+                Log.d("DPC", "button: NETWORK LOGGING IS ENABLED");
             }
         }
 
